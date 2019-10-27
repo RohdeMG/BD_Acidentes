@@ -23,7 +23,6 @@ if (isset($_POST['clicou']) && isset($_POST['username']) && isset($_POST['passwo
  // Salva os dados encontrados na sessão
 		$_SESSION["UsuarioID"] = $resultado['utilizador_id'];
 		$_SESSION["UsuarioNome"] = $resultado['nome'];
-		$_SESSION["UsuarioPermissao"] = $resultado['permissao'];
 		$_SESSION["UsuarioGrupo"] = $resultado['grupo'];
 
 		header('Location:trazdados.php');

@@ -9,10 +9,10 @@
 						<i class="fas fa-user"></i>
 					</label>
 					<input type="text" name="username" placeholder="Username" id="username" required>
-					<label for="password">
+					<label for="palavrapasse">
 						<i class="fas fa-lock"></i>
 					</label>
-					<input type="password" name="password" placeholder="Password" id="password" required>
+					<input type="password" name="palavrapasse" placeholder="Password" id="palavrapasse" required>
 					<input type="submit" name="clicou" value="Login">
 				</form>
 			</div>

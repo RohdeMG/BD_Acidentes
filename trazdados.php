@@ -1,10 +1,13 @@
 		<?php
 		require_once("header.php");
 		require_once("validacao.php");
+		
 
 		if(isset($_SESSION)){
-		  //var_dump($_SESSION); ***no insert colocar os nomes(concelho,natureza) mas insere com o id 
-			?>
+		  //var_dump($_SESSION); 
+				?>
+
+
 
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
 			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3>Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
@@ -15,44 +18,61 @@
 
 
 
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<h3>Filtro de busca:</h3>			
+			<form action="?" method="post">
+				<div class="form-group">
+					<div class="col-md-3 col-sm-3 col-xs-12">
+						<h4>Concelho</h4>
+						<select class="form-control" name="filtroConcelho" placeholder="Concelho" required="">
 
+							<?php
+							$query = 'SELECT DISTINCT "nome","concelhos_id" FROM concelhos ORDER BY "nome" ASC';
+							$result = pg_query($query);
 
-	<div class="col-md-8 col-sm-6 col-xs-12">
-		<h3>Filtros:</h3>
-				<div class="col-md-4 col-sm-6 col-xs-12">
-					<form action="?" method="post">
-						<div class="form-group">
-							Concelho
-							<select class="form-control" name="filtroConcelho" placeholder="Concelho" required="">
-								
-				<?php
-				$query = 'SELECT DISTINCT "nome","concelhos_id" FROM concelhos ORDER BY "nome" ASC';
-				$result = pg_query($query);
+							while ($row = pg_fetch_array($result)) {
+								echo '<option>'.$row["nome"].'</option>'; 
+							}?>
+						</select>
+					</div>
+					<div class="col-md-3 col-sm-3 col-xs-12">
+						<h4>Natureza</h4>
+						<select class="form-control" name="filtroNatureza" placeholder="Natureza" required="">
 
-				while ($row = pg_fetch_array($result)) {
-					echo '<option>'.$row["nome"].'</option>'; 
-				}?>
-							</select>
-Natureza
-							<select class="form-control" name="filtroNatureza" placeholder="Natureza" required="">
-								
-				<?php
-				$query = 'SELECT * FROM tipoacidente ORDER BY "nome" ASC';
-				$result = pg_query($query);
+							<?php
+							$query = 'SELECT * FROM tipoacidente ORDER BY "nome" ASC';
+							$result = pg_query($query);
 
-				while ($row = pg_fetch_array($result)) {
-					echo '<option>'.$row["nome"].'</option>'; 
-				}?>
-							</select>
-						</div>  
+							while ($row = pg_fetch_array($result)) {
+								echo '<option>'.$row["nome"].'</option>'; 
+							}?>
+						</select>
+					</div>  
+					
+					<div class="col-md-2"><input type="number" class="form-control" name="filtroMortos" placeholder="Nº Mortos"></div>
+					<div class="col-md-2"><input type="number" class="form-control" name="filtroFeridos" placeholder="Nº Feridos Graves"></div>
 
-						<input type="number" class="form-control" name="filtroMortos" placeholder="Mortos" required="">
-						<input type="number" class="form-control" name="filtroFeridos" min="0" max="50" placeholder="Feridos" required="">
+					<div id="datetimepicker2" class="input-append date col-md-2">
+						<input data-format="yyyy-MM-dd" type="text" class="form-control" name="data1" placeholder="Data inicial"></input>
+						<span class="add-on">
+							<label for="palavrapasse">
+								<i class="fas fa-calendar-alt"></i>
+							</label>
+						</span>
+					</div>
 
-						<input type="submit" name="filtro" class="btn btn-outline-success" value="Filtrar">
-					</form>
-				</div>			
-	</div>
+					<div id="datetimepicker3" class="input-append date col-md-2">
+						<input data-format="yyyy-MM-dd" type="text" class="form-control" name="data2" placeholder="Data final"></input>
+						<span class="add-on">
+							<label for="palavrapasse">
+								<i class="fas fa-calendar-alt"></i>
+							</label>
+						</span>
+					</div>
+					
+					<input type="submit" name="filtro" class="btn btn-outline-success space" value="Filtrar">
+				</form>		
+			</div>
 
 
 
@@ -60,7 +80,7 @@ Natureza
 
 
 <!-- Form de adicionar ocerrências -->
-	<div class="col-md-4 col-sm-6 col-xs-12">
+	<div class="col-md-3 col-sm-6 col-xs-12">
 		<button type="button" class="btn btn-success" id="btnadd">Adicionar Ocorrência</button>
 		<form action="?" method="post" id="form1">
 			<div class="form-group">
@@ -68,9 +88,12 @@ Natureza
 			<?php
 			$query = 'SELECT nome,concelhos_id FROM concelhos ORDER BY nome ASC';
 			$result = pg_query($query);
-
-			while ($row = pg_fetch_array($result)) {
-				echo '<option>'.$row["concelhos_id"].'</option>'; 
+			 $concepost = $_POST["addConcelho"];
+			while ($row = pg_fetch_assoc($result)) {
+			
+				echo '<option value="'.$row["concelhos_id"].' | '.$row["nome"].'">'.$row["nome"].'</option>';
+				$idconcelho = explode(" | ", $concepost );
+				
 			}?>
 						</select>
 			
@@ -82,22 +105,25 @@ Natureza
 			<input type="text" class="form-control" name="addDescricao" placeholder="Descrição">
 			<input type="number" class="form-control" name="addFeridosleves" placeholder="Feridos leves">
 
-<input type="hidden" class="form-control" name="idconcelho">
+
 
 				<select class="form-control" name="addNatureza" placeholder="Concelho" required="">
 			<?php
 			$query = 'SELECT nome,tipoacidente_id FROM tipoacidente ORDER BY nome ASC';
 			$result = pg_query($query);
+			 $natupost = $_POST["addNatureza"];
 
-			while ($row = pg_fetch_array($result)) {
-				echo '<option>'.$row["tipoacidente_id"].' - '.$row["nome"].'</option>'; 
+			while ($row = pg_fetch_assoc($result)) {		
+				echo '<option value="'.$row["tipoacidente_id"].' | '.$row["nome"].'">'.$row["nome"].'</option>';
+				$idnatureza = explode(" | ", $natupost);
+				
 			}?>
 						</select>
 
 
 
 						<div id="datetimepicker1" class="input-append date">
-							<input data-format="yyyy-MM-dd hh:mm:ss" type="text" class="form-control" name="addDatahora"></input>
+						<input data-format="yyyy-MM-dd hh:mm:ss" type="text" class="form-control" name="addDatahora"></input>
 							<span class="add-on">
 								<label for="palavrapasse">
 									<i class="fas fa-calendar-alt"></i>
@@ -121,7 +147,15 @@ Natureza
 	<div class="col-md-10 col-sm-8 col-xs-12 text-center">
 		<?php
 		switch ($_SESSION["UsuarioGrupo"]) {
-						case 1: // grupo 1, pode adicionar
+						case 1: 
+
+//function alterar concelho - pegar os 3 parametros pelo POST
+//$query = pg_exec($myPDO,"SELECT alterar_d('18', 'Setúbal') AS result") ;
+//$rows = pg_num_rows($query);
+
+
+
+
 
 						if(isset($_POST['add'])){
 							$addConcelho= '\''.$_POST["addConcelho"].'\'';
@@ -135,49 +169,56 @@ Natureza
 							$addDescricao= '\''.$_POST["addDescricao"].'\'';
 							$addFeridosleves= '\''.$_POST["addFeridosleves"].'\'';
 
-							//$idconcelho= '\''.$_POST["idconcelho"].'\'';
+						
 
-							$query = 'INSERT INTO acidentes ("concelho","datahora","mortos","feridosgraves","vias","km","tipoacidente","descricao","feridosleves","gps") VALUES('.$addConcelho.','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$addNatureza.','.$addDescricao.','.$addFeridosleves.','.$addLatlong.');';
+							$query = 'INSERT INTO acidentes ("concelho","datahora","mortos","feridosgraves","vias","km","tipoacidente","descricao","feridosleves","gps") VALUES('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.');';
 							$result = pg_query($query);
-							
-						}
+							echo $query;
+						}?>
+</div>
 
 
-						break;
+<!--====================================================================================-->
+					
+<?php
 
-
-
-
-
-						case 2: // grupo 2
+						
 						if(isset($_POST['filtro'])){
 							$filtroConcelho= '\''.$_POST["filtroConcelho"].'\'';
 							$filtroNatureza= '\''.$_POST["filtroNatureza"].'\'';
-							$filtroMortos= '\''.$_POST["filtroMortos"].'\'';
-							$filtroFeridos= '\''.$_POST["filtroFeridos"].'\'';
-							//$filtroData= '\''.$_POST["filtroData"].'\'';
+							$tratadata1 = '\''.$_POST["data1"].'\'';
+							$tratadata2 = '\''.$_POST["data2"].'\'';
 
+							if(empty($_POST["filtroMortos"])){
+								$filtroMortos= '';
+							}else{
+								$filtroMortos = ' AND mortos = '.$_POST["filtroMortos"].' ';
+							}
 
-							// if(isset($_POST["filtroConcelho"])){
-							// 	$conceadd = ''.$filtroConcelho.' AND ';
-							// }
+							if(empty($_POST["filtroFeridos"])){
+								$filtroFeridos= '';
+							}else{
+								$filtroFeridos = ' AND feridosgraves = '.$_POST["filtroFeridos"].' ';
+							}
 
-							// if(isset($_POST["filtroMortos"])){
-							// 	$moradd = ''.$filtroMortos.' AND ';
-							// }
-
-							// if(isset($_POST["filtroFeridos"])){
-							// 	$feriadd = ''.$filtroFeridos.'';
-							// }
-
+							if(empty($_POST["data1"]) || empty($_POST["data2"])){
+								$datas= '';
+								$dt = '';
+							}else{
+								$datas = ' AND datahora BETWEEN '.$tratadata1.' AND '.$tratadata2.' ';
+								$dt =',date(datahora) ';
+							}
+							
+					
 
 	
-							$queryfiltro = 'SELECT *,tipoacidente.nome AS natureza,concelhos.nome AS nomeconcelho 
-							FROM acidentes,concelhos,tipoacidente 
-							WHERE acidentes.concelho = concelhos.concelhos_id AND concelhos.nome ='.$filtroConcelho.' AND mortos = '.$filtroMortos.' AND feridosgraves = '.$filtroFeridos.' AND acidentes.tipoacidente = tipoacidente.tipoacidente_id AND tipoacidente.nome = '.$filtroNatureza.'';
+							$queryfiltro = 'SELECT *,tipoacidente.nome AS natureza,concelhos.nome AS nomeconcelho '.$dt.' FROM acidentes,concelhos,tipoacidente 
+							WHERE acidentes.concelho = concelhos.concelhos_id 
+							AND concelhos.nome ='.$filtroConcelho.' '.$filtroMortos.' '.$filtroFeridos.' AND acidentes.tipoacidente = tipoacidente.tipoacidente_id AND tipoacidente.nome = '.$filtroNatureza.' '.$datas.' ORDER BY acidentes_id ASC';
 
 							$result = pg_query($queryfiltro);
-							
+							echo $queryfiltro;
+
 							if(pg_num_rows($result) == null){
 								echo "Nenhuma ocorrência encontrada.";
 							}else{
@@ -186,18 +227,23 @@ Natureza
                                 <tr>
                                 	<th scope='col'>ID</th>
                                     <th scope='col'>Concelho</th>
-                                    <th scope='col'>Datahora</th>
+                                    <th scope='col'>Data e hora</th>
                                     <th scope='col'>Mortos</th>
-                                    <th scope='col'>Feridos Grave</th>
-                                    <th scope='col'>Via</th>
+                                    <th scope='col'>Feridos Graves</th>
                                     <th scope='col'>Km</th>
+                                    <th scope='col'>Via</th>
                                     <th scope='col'>Natureza</th>
-                                    <th scope='col'>Modificar</th>
+                                    <th scope='col'>Descrição</th>
+                                    <th scope='col'>Feridos Leves</th>
+                                    <th scope='col'>GPS</th>
+                                    <th scope='col'>Editar</th>
+                                    <th scope='col'>Deletar</th>
                                 </tr>
                             </thead>
                             <tbody>";
 
 							while ($row = pg_fetch_array($result)) {
+								$_SESSION["idparaupdate"] = $row["acidentes_id"];
 								echo "<tr>
 								<td>" . $row["acidentes_id"]. "</td>
 								<td>" . $row["nomeconcelho"]. "</td>
@@ -207,45 +253,27 @@ Natureza
 								<td>" . $row["km"]. "</td>
 								<td>" . $row["vias"]. "</td>
 								<td>" . $row["natureza"]. "</td>
-								<td><button type='button' class='btn btn-success' id='btnmodificar'>Alterar</button></td>
+								<td>" . $row["descricao"]. "</td>
+								<td>" . $row["feridosleves"]. "</td>
+								<td>" . $row["gps"]. "</td>
+								<td><a href='server.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info' >Editar</a></td>
+								<td><a href='delete.php?del=".$row["acidentes_id"]."' class='del_btn btn btn-danger' >Deletar</a></td>
 								</tr>";
+
+
+								
 							}}?>
 							  </tbody>
        						</table>
+		
        		
+<!--==================================================================================== -->    		
 
 
 
 
-
-       		<form action="?" method="post" id="form2">
-			<div class="form-group">
-			<input type="number" class="form-control" name="modiID" placeholder="ID">
-			<input type="text" class="form-control" name="modiConcelho" placeholder="Concelho">
-			<input type="number" class="form-control" name="modiMortos" placeholder="Mortos">
-			<input type="number" class="form-control" name="modiFeridos" placeholder="Feridos Graves">
-			<input type="text" class="form-control" name="modiVia" placeholder="Via">
-			<input type="text" class="form-control" name="modiKm" placeholder="Km">
-			<input type="text" class="form-control" name="modiNatureza" placeholder="Natureza">
-			<input type="submit" name="btnmodificar" class="btn btn-outline-success" value="Modificar">
-			</div>
-			</form>
 							<?php
-						// 	}
-						// 	if(isset($_POST['btnmodificar'])){
-						// 	$modiID= '\''.$_POST["modiID"].'\'';
-						// 	$modiConcelho= '\''.$_POST["modiConcelho"].'\'';
-						// 	$modiMortos= '\''.$_POST["modiMortos"].'\'';
-						// 	$modiFeridos= '\''.$_POST["modiFeridos"].'\'';
-						// 	$modiVia= '\''.$_POST["modiVia"].'\'';
-						// 	$modiKm= '\''.$_POST["modiKm"].'\'';
-						// 	$modiNatureza= '\''.$_POST["modiNatureza"].'\'';
-
-
-						// 	$query = 'UPDATE info SET "Concelho" = '.$modiConcelho.',"M"='.$modiMortos.',"FG"='.$modiFeridos.',"Via"='.$modiVia.',"Km"='.$modiKm.',"Natureza" ='.$modiNatureza.' WHERE "ID"='.$modiID.'';
-						// 	$result = pg_query($query);
-
-						}
+							}
 
 								break;
 						
@@ -259,7 +287,26 @@ Natureza
 					header('Location:logout.php');
 				}
 				?>
-	</div>
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -268,13 +315,25 @@ Natureza
 			});
 		});
 		$(document).ready(function() {
-			$("#btnmodificar").click(function() {
+			$("#botaoalterar").click(function() {
 				$("#form2").toggle();
 			});
 		});
 
   $(function() {
     $('#datetimepicker1').datetimepicker({
+      language: 'pt-BR',
+      pickTime: false
+    });
+  });
+  $(function() {
+    $('#datetimepicker2').datetimepicker({
+      language: 'pt-BR',
+      pickTime: false
+    });
+  });
+  $(function() {
+    $('#datetimepicker3').datetimepicker({
       language: 'pt-BR',
       pickTime: false
     });
@@ -289,4 +348,6 @@ Natureza
 		today: "Hoje"
 	};
 }(jQuery));
+
+
 	</script>

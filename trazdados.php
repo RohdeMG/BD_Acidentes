@@ -123,7 +123,7 @@
 
 
 						<div id="datetimepicker1" class="input-append date">
-						<input data-format="yyyy-MM-dd hh:mm:ss" type="text" class="form-control" name="addDatahora"></input>
+						<input data-format="yyyy-MM-dd hh:mm:ss" type="text" class="form-control" name="addDatahora" placeholder="Data e hora"></input>
 							<span class="add-on">
 								<label for="palavrapasse">
 									<i class="fas fa-calendar-alt"></i>
@@ -256,7 +256,7 @@
 								<td>" . $row["descricao"]. "</td>
 								<td>" . $row["feridosleves"]. "</td>
 								<td>" . $row["gps"]. "</td>
-								<td><a href='server.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info' >Editar</a></td>
+								<td><a href='update.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info' >Editar</a></td>
 								<td><a href='delete.php?del=".$row["acidentes_id"]."' class='del_btn btn btn-danger' >Deletar</a></td>
 								</tr>";
 

@@ -12,6 +12,9 @@
 	$descricao = "";
 	$gps = "";
 
+switch ($_SESSION["UsuarioGrupo"]) {
+					case 1:
+					case 2:
 
 	//------------------------------->>>PARTE PARA SALVAR O UPDATE<<<------------------------------------
 	if(isset($_GET["edit"])){
@@ -41,22 +44,26 @@
 					$gps = $row['gps'];
 					
 				}
-
-
 				
+				
+		}		
+		if(isset($id)){ //VERIFICA SE O ID AINDA EXISTE PARA ALTERAR
+
 		?>
 
 
-<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
+		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
 			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3>Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
 			</div>
 		</div>
-		<div class="container">
-			<h3>Alterar ocorrência <?php echo $id?> ?</h3>
 
-			<form action="update.php" method="post" id="form2">
+
+		<div class="container">
+			<h3>Alterar ocorrência <?php echo $id?>?</h3>
+
+			<form action="update.php" method="post" id="form4">
 				<div class="form-group col-md-4 col-sm-6 col-xs-12">
 					<input type="hidden" class="form-control" name="id" value="<?php echo $id; ?>">	
 
@@ -97,7 +104,7 @@
 					<input type="text" class="form-control" name="modiDescricao" placeholder="Descrição" value="<?php echo $descricao; ?>">
 					<input type="number" class="form-control" name="modiFeridosleves" placeholder="Feridos leves"  value="<?php echo $feridosleves; ?>">
 					<input type="text" class="form-control" name="modiGps" placeholder="GPS" value="<?php echo $gps; ?>">
-					<input type="submit" name="update" class="btn btn-outline-success" value="Salvar">
+					<input type="submit" name="update" class="btn btn-outline-success space" value="Salvar">
 				</div>
 			</form>
 		</div>
@@ -169,6 +176,7 @@
 		// $queryupdate = 'UPDATE acidentes SET concelho = '.$iddoconcelho.', datahora ='.$datahora.',mortos ='.$mortos.',feridosgraves ='.$feridosgraves.',vias ='.$vias.', km = '.$km.', tipoacidente ='.$iddanatureza.', descricao ='.$descricao.',feridosleves ='.$feridosleves.',gps='.$gps.' WHERE acidentes_id ='.$id.';';
 		// $result = pg_query($queryupdate);
 
+        $query1 = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
 		$query = pg_exec($myPDO,'SELECT alterar_aci('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
 		$rows = pg_num_rows($query);
 		?>
@@ -178,10 +186,12 @@
 		</script>
 
 	<?php	
-		//header('location: trazdados.php');
-		// refresh e volta pra tradados com jquery
+
 	}
 
+}else{
+	echo"nao exsite mais";
+}
 
 
 

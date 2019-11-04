@@ -15,6 +15,7 @@
 switch ($_SESSION["UsuarioGrupo"]) {
 					case 1:
 					case 2:
+					
 
 	//------------------------------->>>PARTE PARA SALVAR O UPDATE<<<------------------------------------
 	if(isset($_GET["edit"])){
@@ -45,15 +46,14 @@ switch ($_SESSION["UsuarioGrupo"]) {
 					
 				}
 				
-				
 		}		
-		if(isset($id)){ //VERIFICA SE O ID AINDA EXISTE PARA ALTERAR
+		
 
 		?>
 
 
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
-			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3>Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
+			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
 			</div>
@@ -113,8 +113,9 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 
 	<?php
+	if(isset($id)){ // se o id ainda existe, faz o update.
 	//------------------------------->>>SALVAR O UPDATE<<<------------------------------------
-	if(isset($_POST["update"])){
+	if(isset($_POST["update"])){ 
 
 
 		if(empty($_POST["modiFeridosleves"])){
@@ -123,6 +124,12 @@ switch ($_SESSION["UsuarioGrupo"]) {
 				$feridosleves = '\''.$_POST["modiFeridosleves"].'\'';
 			}
 
+		if(empty($_POST["modiFeridosgraves"])){
+				$feridosgraves = "NULL";
+
+			}else{
+				$feridosgraves = '\''.$_POST["modiFeridosgraves"].'\'';
+			}
 
 		if(empty($_POST["modiKm"])){
 				$km = "NULL";
@@ -155,7 +162,7 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 
 		$datahora = '\''.$_POST["modiDatahora"].'\'';
-		$feridosgraves = '\''.$_POST["modiFeridosgraves"].'\'';
+		//$feridosgraves = '\''.$_POST["modiFeridosgraves"].'\'';
 		//$vias = '\''.$_POST["modiVias"].'\'';
 	    $iddoconcelho = '\''.$idconcelho[0].'\'';
 	    $iddanatureza = '\''.$idnatureza[0].'\'';
@@ -170,28 +177,42 @@ switch ($_SESSION["UsuarioGrupo"]) {
 		//$concelho = '\''.$_POST["modiConcelho"].'\'';
 		
 
-
-
-		//NÃO EXCLUIR ESSA UPDATE COMENTADO
-		// $queryupdate = 'UPDATE acidentes SET concelho = '.$iddoconcelho.', datahora ='.$datahora.',mortos ='.$mortos.',feridosgraves ='.$feridosgraves.',vias ='.$vias.', km = '.$km.', tipoacidente ='.$iddanatureza.', descricao ='.$descricao.',feridosleves ='.$feridosleves.',gps='.$gps.' WHERE acidentes_id ='.$id.';';
-		// $result = pg_query($queryupdate);
-
-        $query1 = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-		$query = pg_exec($myPDO,'SELECT alterar_aci('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
+		
+       	
+		$query = pg_exec($myPDO,'SELECT update_a('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
 		$rows = pg_num_rows($query);
-		?>
 
-		<script type="text/javascript">
-			window.location = "trazdados.php";
-		</script>
 
-	<?php	
+		//INSERE NO HISTÓRICO A OPERACÃO
+		$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+		$operacao = "update de acidente";
+		$operacaook = '\''.$operacao.'\'';
 
+		$queryhistoric= 'INSERT INTO historico ("acidente",utilizador,"datahora","operacao") VALUES('.$id.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+		$result = pg_query($queryhistoric);
+		
+		//echo "<div class='alert alert-success col-md-3' role='alert'>Alteração realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";	
 	}
-
-}else{
-	echo"nao exsite mais";
+	
+	}else{ 
+	echo "<div class='alert alert-alert col-md-3' role='alert'>Essa ocorrência não existe!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
 }
+
+
+				//FUNÇÃO UPDATE CONCELHO
+			// if(isset($_POST["addSoConcelho"])){
+			// $nomeconfunc = $_POST["addOnlyConcelho"];
+			// //$idconfunc = $_POST["adddistrito"];
+			// 	$query= pg_exec('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+			// 	$query = pg_exec($myPDO,'SELECT alterar_con('.$nomeconfunc.','.$$iddistrito[0].') AS result');
+			// 	$query= pg_exec('pg_sleep(6)');
+			// 	$rows = pg_num_rows($query);
+			// 	echo "aletrou o concelho";
+			// }
+
+			//FUNÇÃO UPDATE TIPO ACIDENTE
+
+
 
 
 

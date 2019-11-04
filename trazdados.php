@@ -12,9 +12,9 @@
 		?>
 
 
-
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
-			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
+			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3>
+			</div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
 			</div>
@@ -82,11 +82,17 @@
 				</form>		
 		</div>
 
+<div class="container text-right">
+	<button type="button" class="btn btn-info btn-sm space" id="btnadd">Adicionar Ocorrência</button>
+	<button type="button" class="btn btn-info btn-sm space" id="btnaddumconcelho">Adicionar Concelho</button>
+	<button type="button" class="btn btn-info btn-sm space" id="btnaddtipoacidente">Adicionar Tipo de Acidente</button>
+</div>
 
 
 		<!-- FORMULÁRIO DE ADIÇÃO DE CONCELHOS -->
-		<div class="col-md-2 col-sm-2 col-xs-12">
-			<button type="button" class="btn btn-success btn-sm space" id="btnaddumconcelho">Adicionar Concelho</button>
+	<div class="container">
+
+		<div class="col-md-3 col-sm-4 col-xs-12 text-right pull-right">
 			<form action="?" method="post" id="form3">
 				<div class="form-group">
 					<input type="text" class="form-control" name="addOnlyConcelho" placeholder="Concelho" required="">
@@ -107,25 +113,25 @@
 					</select>
 					<input type="submit" name="addSoConcelho" class="btn btn-outline-success space" value="Adicionar">
 				</div>
+				<hr></hr> 
 			</form>
-		</div>
+		
 
 
 		<!-- FORMULÁRIO DE ADIÇÃO DE TIPOS DE ACIDENTES -->
-		<div class="col-md-2 col-sm-2 col-xs-12">
-			<button type="button" class="btn btn-success btn-sm space" id="btnaddtipoacidente">Adicionar Tipo de Acidente</button>
+		
 			<form action="?" method="post" id="form2">
 				<div class="form-group">
-					<input type="text" class="form-control" name="addOnlyTAcidente" placeholder="Tipo de Acidente">
+					<input type="text" class="form-control" name="addOnlyTAcidente" placeholder="Tipo de Acidente" required="">
 					<input type="submit" name="addTipoAcidente" class="btn btn-outline-success space" value="Adicionar">
 				</div>
+				<hr></hr>
 			</form>
-		</div>
+		
 
 
 <!-- FORMULÁRIO DE ADIÇÃO DE OCORRÊNCIAS -->
-			<div class="col-md-2 col-sm-2 col-xs-12">
-				<button type="button" class="btn btn-success btn-sm space" id="btnadd">Adicionar Ocorrência</button>
+						
 				<form action="?" method="post" id="form1">
 					<div class="form-group">
 						<select class="form-control" name="addConcelho" placeholder="Concelho" required="">
@@ -177,9 +183,10 @@
 
 						<input type="submit" name="add" class="btn btn-outline-success" value="Adicionar">
 					</div>
+					<hr></hr>
 				</form>
 			</div>
-
+	</div>
 
 
 
@@ -188,7 +195,7 @@
 				<?php
 				switch ($_SESSION["UsuarioGrupo"]) {
 					case 1:
-					case 2: //ADMIN
+					case 2: 
 
 
 //PARA INSERIR OS DADOS DE CONCELHO
@@ -197,7 +204,23 @@
 
 						$query = 'INSERT INTO concelhos ("nome","distrito") VALUES('.$addOnlyConcelho.','.$iddistrito[0].');';
 						$result = pg_query($query);
-						echo $query;
+
+						//INSERE NO HISTÓRICO A OPERACÃO
+						$lastid = 'SELECT max(concelhos_id) AS lid FROM concelhos'; 
+						$resulta = pg_query($lastid);
+						$row = pg_fetch_assoc($resulta);
+						$lastinsert = $row["lid"];
+					
+
+						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+						$operacao = "inserção de concelho";
+						$operacaook = '\''.$operacao.'\'';
+
+						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+						$result = pg_query($queryhistoric);
+
+						echo "<div class='alert alert-success col-md-3' role='alert'>Concelho adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
+						
 					}
 
 //PARA INSERIR OS DADOS TIPO DE ACIDENTE
@@ -206,6 +229,22 @@
 
 						$query = 'INSERT INTO tipoacidente ("nome") VALUES('.$addOnlyTAcidente.');';
 						$result = pg_query($query);
+
+						//INSERE NO HISTÓRICO A OPERACÃO
+						$lastid = 'SELECT max(tipoacidente_id) AS lid FROM tipoacidente'; 
+						$resulta = pg_query($lastid);
+						$row = pg_fetch_assoc($resulta);
+						$lastinsert = $row["lid"];
+					
+
+						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+						$operacao = "inserção de tipo de acidente";
+						$operacaook = '\''.$operacao.'\'';
+
+						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+						$result = pg_query($queryhistoric);
+
+						echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
 					}
 
 
@@ -227,7 +266,25 @@
 
 						$query = 'INSERT INTO acidentes ("concelho","datahora","mortos","feridosgraves","vias","km","tipoacidente","descricao","feridosleves","gps") VALUES('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.');';
 						$result = pg_query($query);
+
 						
+						
+
+						//INSERE NO HISTÓRICO A OPERACÃO
+						$lastid = 'SELECT max(acidentes_id) AS lid FROM acidentes'; 
+						$resulta = pg_query($lastid);
+						$row = pg_fetch_assoc($resulta);
+						$lastinsert = $row["lid"];
+					
+
+						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+						$operacao = "inserção de acidente";
+						$operacaook = '\''.$operacao.'\'';
+
+						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+						$result = pg_query($queryhistoric);
+
+						echo "<div class='alert alert-success col-md-3' role='alert'>Ocorrência adicionada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
 					}
 			
 
@@ -269,10 +326,10 @@
 
 
 					if(pg_num_rows($result) == null){
-						echo "<div class='container spacetopo alert alert-warning' role='alert'>Nenhuma ocorrência encontrada.</div>";
+						echo "<div class='container spacetopo alert alert-warning' role='alert'>Nenhuma ocorrência encontrada.</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
 					}else{
 						echo "<div class='container spacetopo'><table class='table table-bordered table-striped'>
-						<thead>
+						<thead class='fundotable'>
 						<tr>
 						<th scope='col'>ID</th>
 						<th scope='col'>Concelho</th>
@@ -285,9 +342,11 @@
 						<th scope='col'>Descrição</th>
 						<th scope='col'>Feridos Leves</th>
 						<th scope='col'>GPS</th>
-						<th scope='col'>Editar</th>
-						<th scope='col'>Deletar</th>
-						</tr>
+						<th scope='col'>Editar</th>";
+						if($_SESSION["UsuarioGrupo"] == 1){
+						echo "<th scope='col'>Deletar</th>";
+						}
+						echo"</tr>
 						</thead>
 						<tbody>";
 
@@ -305,9 +364,11 @@
 							<td>" . $row["descricao"]. "</td>
 							<td>" . $row["feridosleves"]. "</td>
 							<td>" . $row["gps"]. "</td>
-							<td><a href='update.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info' >Editar</a></td>
-							<td><a href='delete.php?del=".$row["acidentes_id"]."' class='del_btn btn btn-danger' >Deletar</a></td>
-							</tr>";
+							<td><a href='update.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info btn-sm'><i class='far fa-edit'></i></a></td>";
+							if($_SESSION["UsuarioGrupo"] == 1){
+							echo "<td><a href='delete.php?del=".$row["acidentes_id"]."' class='del_btn btn btn-danger btn-sm'><i class='far fa-trash-alt'></i></a></td>";
+							}
+							echo"</tr>";
 							
 						}}?>
 					</tbody>
@@ -316,11 +377,11 @@
 
 				<?php
 			}
+
 			break;
+		} //chave do switch case
 
-		}
-
-	}else{
+	}else{ //chave do isset SESSION
 		header('Location:logout.php');
 	}
 	?>

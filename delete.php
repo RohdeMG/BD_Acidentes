@@ -11,9 +11,11 @@
 		$km = "";
 		$descricao = "";
 		$gps = "";
+		$tipoacidente = "";
+		$concelho = "";
 
 
-		if(isset($_GET["del"])){
+		if(isset($_GET["del"]) && $_SESSION["UsuarioGrupo"] == 1){ //pega o id do get e verifica se é grupo 1
 			$id = $_GET["del"];
 
 
@@ -36,12 +38,12 @@
 			$descricao = $row['descricao'];
 			$feridosleves = $row['feridosleves'];
 			$gps = $row['gps'];
-
-		}
+}
+		
 		?>
 
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
-			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3>Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
+			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
 			</div>
@@ -74,17 +76,19 @@
 		//------------------------------->>>PARTE DO DELETE<<<------------------------------------
 		if (isset($_POST['delete'])) {
 			$id = $_POST["id"];
-			// $querydelete = 'DELETE FROM acidentes WHERE acidentes_id ='.$id.''; 
-			// $result = pg_query($querydelete);
+			
 
-		$querydelete = pg_exec($myPDO,'SELECT deletar_aci('.$id.') AS result');
+		$querydelete = pg_exec($myPDO,'SELECT delete_a('.$id.') AS result');
 		$rows = pg_query($querydelete);
 
-		?>
+		//INSERE NO HISTÓRICO A OPERACÃO
+		$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+		$operacao = "exclusão de acidente";
+		$operacaook = '\''.$operacao.'\'';
 
-		<script type="text/javascript">
-			window.location = "trazdados.php";
-		</script>
+		$queryhistoric= 'INSERT INTO historico ("acidente",utilizador,"datahora","operacao") VALUES('.$id.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+		$result = pg_query($queryhistoric);
 
-	<?php	
+		echo "<div class='alert alert-success col-md-3' role='alert'>Exlusão realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";	
 		}
+	

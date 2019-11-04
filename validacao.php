@@ -1,6 +1,7 @@
 <?php
 require_once("conexao.php");
 
+date_default_timezone_set('Europe/Lisbon');
 
 // Verifica se houve POST e se o usuário e senha estão preenchidos
 if (isset($_POST["clicou"])){
@@ -17,14 +18,14 @@ if (isset($_POST["clicou"])){
 	if(pg_num_rows($result) != null){
 		 // Salva os dados encontrados na variável $resultado
 		$resultado = pg_fetch_assoc($result);
-
+	
 		
  // Salva os dados encontrados na sessão
 		$_SESSION["UsuarioID"] = $resultado["utilizadores_id"];
 		$_SESSION["UsuarioNome"] = $resultado["nome"];
 		$_SESSION["UsuarioGrupo"] = $resultado["grupo"];
 
-		
+	
 
 		header("Location:trazdados.php");
 	}else{

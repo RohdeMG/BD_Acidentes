@@ -159,27 +159,14 @@ switch ($_SESSION["UsuarioGrupo"]) {
 				$descricao = '\''.$_POST["modiDescricao"].'\'';
 			}
 
-
-
 		$datahora = '\''.$_POST["modiDatahora"].'\'';
-		//$feridosgraves = '\''.$_POST["modiFeridosgraves"].'\'';
-		//$vias = '\''.$_POST["modiVias"].'\'';
 	    $iddoconcelho = '\''.$idconcelho[0].'\'';
 	    $iddanatureza = '\''.$idnatureza[0].'\'';
-	    //$descricao = '\''.$_POST["modiDescricao"].'\'';
 	    $mortos = '\''.$_POST["modiMortos"].'\'';
 		$id = '\''.$_POST["id"].'\'';
-
-		//$km = '\''.$_POST["modiKm"].'\'';
-		//$tipoacidente = '\''.$_POST["modiTipoacidente"].'\'';
-		//$gps = '\''.$_POST["modiGps"].'\'';
-		//$feridosleves = '\''.$_POST["modiFeridosleves"].'\'';
-		//$concelho = '\''.$_POST["modiConcelho"].'\'';
 		
 
-		
-       	
-		$query = pg_exec($myPDO,'SELECT update_a('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
+		$query = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT update_a('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
 		$rows = pg_num_rows($query);
 
 
@@ -191,7 +178,7 @@ switch ($_SESSION["UsuarioGrupo"]) {
 		$queryhistoric= 'INSERT INTO historico ("acidente",utilizador,"datahora","operacao") VALUES('.$id.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
 		$result = pg_query($queryhistoric);
 		
-		//echo "<div class='alert alert-success col-md-3' role='alert'>Alteração realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";	
+		echo "<div class='alert alert-success col-md-3' role='alert'>Alteração realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";	
 	}
 	
 	}else{ 

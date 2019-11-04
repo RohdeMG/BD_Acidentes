@@ -78,7 +78,7 @@
 			$id = $_POST["id"];
 			
 
-		$querydelete = pg_exec($myPDO,'SELECT delete_a('.$id.') AS result');
+		$querydelete = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT delete_a('.$id.') AS result');
 		$rows = pg_query($querydelete);
 
 		//INSERE NO HISTÓRICO A OPERACÃO

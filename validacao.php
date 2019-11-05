@@ -1,7 +1,6 @@
 <?php
 require_once("conexao.php");
 
-date_default_timezone_set('Europe/Lisbon');
 
 // Verifica se houve POST e se o usuário e senha estão preenchidos
 if (isset($_POST["clicou"])){

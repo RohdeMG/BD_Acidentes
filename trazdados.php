@@ -199,12 +199,17 @@
 
 
 //PARA INSERIR OS DADOS DE CONCELHO
-					if(isset($_POST['addSoConcelho'])){
+				if(isset($_POST['addSoConcelho'])){
 						$addOnlyConcelho= '\''.$_POST["addOnlyConcelho"].'\'';
 
-						$query = 'INSERT INTO concelhos ("nome","distrito") VALUES('.$addOnlyConcelho.','.$iddistrito[0].');';
-						$result = pg_query($query);
+						// $query = 'INSERT INTO concelhos ("nome","distrito") VALUES('.$addOnlyConcelho.','.$iddistrito[0].');';
+						// $result = pg_query($query);
 
+						//FUNÇÃO INSERT CONCELHO
+						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_c('.$addOnlyConcelho.','.$iddistrito[0].') AS result; SELECT pg_sleep(6)');
+
+
+						if($queryinsert){
 						//INSERE NO HISTÓRICO A OPERACÃO
 						$lastid = 'SELECT max(concelhos_id) AS lid FROM concelhos'; 
 						$resulta = pg_query($lastid);
@@ -219,17 +224,26 @@
 						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
 						$result = pg_query($queryhistoric);
 
-						echo "<div class='alert alert-success col-md-3' role='alert'>Concelho adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
-						
+						echo "<div class='alert alert-success col-md-3' role='alert'>Concelho adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+					}else{
+
+						echo "<div class='alert alert-warning col-md-3' role='alert'>Concelho não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 					}
+				}
 
 //PARA INSERIR OS DADOS TIPO DE ACIDENTE
-					if(isset($_POST['addTipoAcidente'])){
+				if(isset($_POST['addTipoAcidente'])){
 						$addOnlyTAcidente= '\''.$_POST["addOnlyTAcidente"].'\'';
 
-						$query = 'INSERT INTO tipoacidente ("nome") VALUES('.$addOnlyTAcidente.');';
-						$result = pg_query($query);
+						// $query = 'INSERT INTO tipoacidente ("nome") VALUES('.$addOnlyTAcidente.');';
+						// $result = pg_query($query);
 
+						//FUNÇÃO INSERT TIPO ACIDENTE
+						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_ta('.$addOnlyTAcidente.') AS result; SELECT pg_sleep(6)');
+
+						if($queryinsert){
+							echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+							
 						//INSERE NO HISTÓRICO A OPERACÃO
 						$lastid = 'SELECT max(tipoacidente_id) AS lid FROM tipoacidente'; 
 						$resulta = pg_query($lastid);
@@ -244,31 +258,79 @@
 						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
 						$result = pg_query($queryhistoric);
 
-						echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
+						
+					}else{
+						echo "<div class='alert alert-warning col-md-3' role='alert'>Tipo de Acidente não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 					}
+				}
 
 
 
 
 //PARA INSERIR OS DADOS DA ADIÇÃO
 					if(isset($_POST['add'])){
+
+						if(empty($_POST["addMortos"])){
+							$addMortos = "NULL";
+
+						}else{
+							$addMortos = '\''.$_POST["addMortos"].'\'';
+						}
+
+						if(empty($_POST["addFeridos"])){
+							$addFeridos = "NULL";
+
+						}else{
+							$addFeridos = '\''.$_POST["addFeridos"].'\'';
+						}
+
+						if(empty($_POST["addVia"])){
+							$addVia = "NULL";
+
+						}else{
+							$addVia = '\''.$_POST["addVia"].'\'';
+						}
+
+						if(empty($_POST["addKm"])){
+							$addKm = "NULL";
+
+						}else{
+							$addKm = '\''.$_POST["addKm"].'\'';
+						}
+
+						if(empty($_POST["addLatlong"])){
+							$addLatlong = "NULL";
+
+						}else{
+							$addLatlong = '\''.$_POST["addLatlong"].'\'';
+						}
+
+						if(empty($_POST["addFeridosleves"])){
+							$addFeridosleves = "NULL";
+
+						}else{
+							$addFeridosleves = '\''.$_POST["addFeridosleves"].'\'';
+						}
+
+						if(empty($_POST["addDescricao"])){
+							$addDescricao = "NULL";
+
+						}else{
+							$addDescricao = '\''.$_POST["addDescricao"].'\'';
+						}
+
+
 						$addConcelho= '\''.$_POST["addConcelho"].'\'';
 						$addDatahora= '\''.$_POST["addDatahora"].'\'';
-						$addMortos= '\''.$_POST["addMortos"].'\'';
-						$addFeridos= '\''.$_POST["addFeridos"].'\'';
-						$addVia= '\''.$_POST["addVia"].'\'';
-						$addKm= '\''.$_POST["addKm"].'\'';
 						$addNatureza= '\''.$_POST["addNatureza"].'\'';
-						$addLatlong= '\''.$_POST["addLatlong"].'\'';
-						$addDescricao= '\''.$_POST["addDescricao"].'\'';
-						$addFeridosleves= '\''.$_POST["addFeridosleves"].'\'';
 
 
-						$query = 'INSERT INTO acidentes ("concelho","datahora","mortos","feridosgraves","vias","km","tipoacidente","descricao","feridosleves","gps") VALUES('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.');';
-						$result = pg_query($query);
 
-						
-						
+						//FUNÇÃO DE INSERT ACIDENTES
+						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_a('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.') AS result; SELECT pg_sleep(6)');
+
+						if($queryinsert){
+							echo "<div class='alert alert-success col-md-3' role='alert'>Ocorrência adicionada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 
 						//INSERE NO HISTÓRICO A OPERACÃO
 						$lastid = 'SELECT max(acidentes_id) AS lid FROM acidentes'; 
@@ -284,7 +346,11 @@
 						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
 						$result = pg_query($queryhistoric);
 
-						echo "<div class='alert alert-success col-md-3' role='alert'>Ocorrência adicionada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
+						}else{
+							echo "<div class='alert alert-warning col-md-3' role='alert'>Ocorrência não adicionada, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+						}
+
+
 					}
 			
 

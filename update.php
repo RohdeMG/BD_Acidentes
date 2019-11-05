@@ -1,6 +1,6 @@
 	<?php
-	require_once("conexao.php");
 	require_once("header.php");
+	require_once("conexao.php");
 
 	$mortos = "";
 	$id = "";
@@ -33,7 +33,7 @@ switch ($_SESSION["UsuarioGrupo"]) {
 					$id = $row['acidentes_id'];
 					$concelho = $row['concelhos_id'];
 					$concelhonome = $row['nomeconcelho'];
-					$datahora = $row['datahora'];
+					$datahoratabela = $row['datahora'];
 					$mortos = $row['mortos'];
 					$feridosgraves = $row['feridosgraves'];
 					$vias = $row['vias'];
@@ -82,7 +82,16 @@ switch ($_SESSION["UsuarioGrupo"]) {
 						?>
 					</select>
 
-					<input type="text" class="form-control" name="modiDatahora" placeholder="Data e hora" value="<?php echo $datahora; ?>">
+						<div id="datetimepicker4" class="input-append date">
+							<input data-format="yyyy-MM-dd hh:mm:ss" type="text" class="form-control" name="modiDatahora" placeholder="Data e hora" value="<?php echo $datahoratabela; ?>">
+							<span class="add-on">
+								<label for="palavrapasse">
+									<i class="fas fa-calendar-alt"></i>
+								</label>
+							</span>
+						</div>
+
+					<!--<input type="text" class="form-control" name="modiDatahora" placeholder="Data e hora" value="<?php echo $datahoratabela; ?>">-->
 					<input type="number" class="form-control" name="modiMortos" placeholder="Nº Mortos"  value="<?php echo $mortos; ?>">
 					<input type="number" class="form-control" name="modiFeridosgraves" placeholder="Feridos graves" value="<?php echo $feridosgraves; ?>">
 					<input type="text" class="form-control" name="modiVias" placeholder="Via" value="<?php echo $vias; ?>">
@@ -109,7 +118,14 @@ switch ($_SESSION["UsuarioGrupo"]) {
 			</form>
 		</div>
 	
-
+<script type="text/javascript">
+	$(function() {
+			$('#datetimepicker4').datetimepicker({
+				language: 'pt-BR',
+				pickTime: false
+			});
+		});
+</script>
 
 
 	<?php
@@ -126,7 +142,6 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 		if(empty($_POST["modiFeridosgraves"])){
 				$feridosgraves = "NULL";
-
 			}else{
 				$feridosgraves = '\''.$_POST["modiFeridosgraves"].'\'';
 			}
@@ -140,35 +155,44 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 		if(empty($_POST["modiGps"])){
 				$gps = "NULL";
-
 			}else{
 				$gps = '\''.$_POST["modiGps"].'\'';
 			}
 
 		if(empty($_POST["modiVias"])){
 				$vias = "NULL";
-
 			}else{
 				$vias = '\''.$_POST["modiVias"].'\'';
 			}
 
 		if(empty($_POST["modiDescricao"])){
 				$descricao = "NULL";
-
 			}else{
 				$descricao = '\''.$_POST["modiDescricao"].'\'';
 			}
 
-		$datahora = '\''.$_POST["modiDatahora"].'\'';
+			if(empty($_POST["modiDatahora"])){
+				$datahora = "NULL";
+			}else{
+				$datahora = '\''.$_POST["modiDatahora"].'\'';			
+			}
+
+			if(empty($_POST["modiMortos"])){
+				$mortos = "NULL";
+			}else{
+				$mortos = '\''.$_POST["modiMortos"].'\'';			
+			}
+
+		$id = '\''.$_POST["id"].'\'';
 	    $iddoconcelho = '\''.$idconcelho[0].'\'';
 	    $iddanatureza = '\''.$idnatureza[0].'\'';
-	    $mortos = '\''.$_POST["modiMortos"].'\'';
-		$id = '\''.$_POST["id"].'\'';
 		
 
-		$query = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT update_a('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
-		$rows = pg_num_rows($query);
-
+		//FUNÇÃO UPDATE ACIDENTE
+		$queryupdate = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT update_a('.$id.','.$iddoconcelho.','.$datahora.','.$mortos.','.$feridosgraves.','.$vias.','.$km.','.$iddanatureza.','.$descricao.','.$feridosleves.','.$gps.') AS result');
+		
+		if($queryupdate){
+			echo "<div class='alert alert-success col-md-3' role='alert'>Alteração realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";	
 
 		//INSERE NO HISTÓRICO A OPERACÃO
 		$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
@@ -177,27 +201,20 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 		$queryhistoric= 'INSERT INTO historico ("acidente",utilizador,"datahora","operacao") VALUES('.$id.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
 		$result = pg_query($queryhistoric);
+
+		}else{
+			echo "<div class='alert alert-warning col-md-3' role='alert'>Alteração não realizada, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";	
+		}
 		
-		echo "<div class='alert alert-success col-md-3' role='alert'>Alteração realizada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";	
 	}
 	
 	}else{ 
-	echo "<div class='alert alert-alert col-md-3' role='alert'>Essa ocorrência não existe!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
+	echo "<div class='alert alert-warning col-md-3' role='alert'>Essa ocorrência não existe!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 3000);</script>";
 }
 
 
-				//FUNÇÃO UPDATE CONCELHO
-			// if(isset($_POST["addSoConcelho"])){
-			// $nomeconfunc = $_POST["addOnlyConcelho"];
-			// //$idconfunc = $_POST["adddistrito"];
-			// 	$query= pg_exec('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
-			// 	$query = pg_exec($myPDO,'SELECT alterar_con('.$nomeconfunc.','.$$iddistrito[0].') AS result');
-			// 	$query= pg_exec('pg_sleep(6)');
-			// 	$rows = pg_num_rows($query);
-			// 	echo "aletrou o concelho";
-			// }
-
-			//FUNÇÃO UPDATE TIPO ACIDENTE
+		
+			
 
 
 

@@ -1,13 +1,13 @@
 * {
  box-sizing: border-box;
  font-family: 'Montserrat', sans-serif;
- font-size: 16px;
+ font-size: 12px;
  -webkit-font-smoothing: antialiased;
  -moz-osx-font-smoothing: grayscale;
 }
 body {
  background: #fff;  /* fallback for old browsers */
-
+ font-size: 12px;
 }
 
 .fundotable{
@@ -23,6 +23,10 @@ body {
 }
 
 #form3{
+  display: none;
+}
+
+#form8{
   display: none;
 }
 
@@ -59,7 +63,7 @@ body {
  width: 400px;
  background-color: #ffffff;
  box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.5);
- margin: 100px auto;
+ margin: 100px auto 20px auto;
 }
 .login h1 {
  text-align: center;

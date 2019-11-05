@@ -4,4 +4,6 @@
 	or die('Could not connect: ' . pg_last_error());
 	$encoding = pg_client_encoding($myPDO);
 	//"host=pcdev.pt dbname=admin_alexf user=admin_alex password=5t24*uVj"
+	error_reporting(0);
+	date_default_timezone_set('Europe/Lisbon');
 	?>

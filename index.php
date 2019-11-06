@@ -18,18 +18,18 @@
 			</form>
 		</div>
 	</div>
-		<div class="col-md-4 col-sm-4 col-xs-12"></div>
-		<div class="col-md-4 col-sm-4 col-xs-12 text-right">
-			<button type="button" class="btn btn-info btn-sm space" id="btnuser">Adicionar Utilizador</button>
-			<form action="?" method="post" id="form8">
-				<div class="form-group">
-					<input type="text" class="form-control" name="nomeuser" placeholder="Usuário" required>
-					<input type="text" class="form-control" name="nameuser" placeholder="Username" required>
-					<input type="password" class="form-control" name="senhauser" placeholder="Senha" required>
-					<input type="number" class="form-control" name="grupouser" id="grupouser"  placeholder="Grupo: 1 ou 2" required>
-					<input type="submit" class="btn btn-outline-primary space" name="adduser" value="Adicionar">
-				</div>
+	<div class="col-md-4 col-sm-4 col-xs-12"></div>
+	<div class="col-md-4 col-sm-4 col-xs-12 text-right">
+		<button type="button" class="btn btn-info btn-sm space" id="btnuser">Adicionar Utilizador</button>
+		<form action="?" method="post" id="form8">
+			<div class="form-group">
+				<input type="text" class="form-control" name="nomeuser" placeholder="Usuário" required>
+				<input type="text" class="form-control" name="nameuser" placeholder="Username" required>
+				<input type="password" class="form-control" name="senhauser" placeholder="Senha" required>
+				<input type="number" class="form-control" name="grupouser" id="grupouser"  placeholder="Grupo: 1 ou 2" required>
+				<input type="submit" class="btn btn-outline-primary space" name="adduser" value="Adicionar">
 			</div>
+		</div>
 		<div class="col-md-4 col-sm-4 col-xs-12"></div>
 
 

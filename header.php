@@ -1,5 +1,5 @@
 	<!DOCTYPE html>
-	<html>
+	<html lang="pt-br">
 	<head>
 		<meta charset="UTF-8">
 		<script src="js/jquery.js" type="text/javascript"></script>  
@@ -9,8 +9,6 @@
 		<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet"> 
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
-
-
 
 		<title>Sinistralidade Rodoviária PT</title>
 	</head>

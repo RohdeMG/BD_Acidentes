@@ -4,16 +4,15 @@
 	
 
 	if(isset($_SESSION)){
-		//var_dump($_SESSION);
 
 		switch ($_SESSION["UsuarioID"]) {
 			case 1:
-				$_SESSION["imagem"] = "PSP.png";
-				break;
+			$_SESSION["imagem"] = "PSP.png";
+			break;
 			case 2:
-				$_SESSION["imagem"] = "GNR.png";
-				break;
-			}
+			$_SESSION["imagem"] = "GNR.png";
+			break;
+		}
 
 		?>
 
@@ -28,7 +27,7 @@
 
 
 
-<!-- FORMULÁRIO DE FILTRO -->
+		<!-- FORMULÁRIO DE FILTRO -->
 		<div class="container shadowbox">
 			<h4>Filtro de busca:</h4>			
 			<form action="?" method="post">
@@ -85,104 +84,104 @@
 
 					<input type="submit" name="filtro" class="btn btn-outline-success space" value="Filtrar">
 				</div>
-				</form>		
+			</form>		
 		</div>
 
-<div class="container text-right">
-	<button type="button" class="btn btn-info btn-sm space" id="btnadd">Adicionar Ocorrência</button>
-	<button type="button" class="btn btn-info btn-sm space" id="btnaddumconcelho">Adicionar Concelho</button>
-	<button type="button" class="btn btn-info btn-sm space" id="btnaddtipoacidente">Adicionar Tipo de Acidente</button>
-	<?php
-if($_SESSION["UsuarioGrupo"] == 1){
-	echo "<button type='button' class='btn btn-info btn-sm space' id='btnhisto'>Visualizar Histórico</button>";
-}?>
-</div>
-
-
-
-<!-- CHAMADA DE HISTÓRICO -->
-<?php
-if($_SESSION["UsuarioGrupo"] == 1){
-					
-$queryfiltro = 'SELECT * FROM historico ORDER BY historico_id ASC';
-$result = pg_query($queryfiltro);
-?>
-
-	<div class="container spacetopo" id="showtable">
-		<table class="table table-bordered table-striped">
-		<thead class="fundotable">
-			<tr>
-				<th scope="col">ID</th>
-				<th scope="col">Id do caso</th>
-				<th scope="col">Utilizador</th>
-				<th scope="col">Data e hora</th>
-				<th scope="col">Operação</th>
-			</tr>
-		</thead>
-		<tbody>
+		<div class="container text-right">
+			<button type="button" class="btn btn-info btn-sm space" id="btnadd">Adicionar Ocorrência</button>
+			<button type="button" class="btn btn-info btn-sm space" id="btnaddumconcelho">Adicionar Concelho</button>
+			<button type="button" class="btn btn-info btn-sm space" id="btnaddtipoacidente">Adicionar Tipo de Acidente</button>
 			<?php
-while ($row = pg_fetch_array($result)) {
-							
-			echo "<tr>
-			<td>" . $row["historico_id"]. "</td>
-			<td>" . $row["acidente"]. "</td>
-			<td>" . $row["utilizador"]. "</td>
-			<td>" . $row["datahora"]. "</td>
-			<td>" . $row["operacao"]. "</td>
-			</tr>";
-		}
-		}
+			if($_SESSION["UsuarioGrupo"] == 1){
+				echo "<button type='button' class='btn btn-info btn-sm space' id='btnhisto'>Visualizar Histórico</button>";
+			}?>
+		</div>
+
+
+
+		<!-- CHAMADA DE HISTÓRICO -->
+		<?php
+		if($_SESSION["UsuarioGrupo"] == 1){
+
+			$queryfiltro = 'SELECT *,grupos.nome AS nomegrup  FROM historico,grupos WHERE grupos.grupos_id = historico.utilizador ORDER BY historico_id DESC LIMIT 100';
+			$result = pg_query($queryfiltro);
 			?>
-		</tbody>
-	</table>
-</div>
+
+			<div class="container spacetopo" id="showtable">
+				<table class="table table-bordered table-striped">
+					<thead class="fundotable">
+						<tr>
+							<th scope="col">ID</th>
+							<th scope="col">ID tipo</th>
+							<th scope="col">Utilizador</th>
+							<th scope="col">Data e hora</th>
+							<th scope="col">Operação</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						while ($row = pg_fetch_array($result)) {
+							
+							echo "<tr>
+							<td>" . $row["historico_id"]. "</td>
+							<td>" . $row["acidente"]. "</td>
+							<td>" . $row["nomegrup"]. "</td>
+							<td>" . $row["datahora"]. "</td>
+							<td>" . $row["operacao"]. "</td>
+							</tr>";
+						}
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
 
 
 
 
 		<!-- FORMULÁRIO DE ADIÇÃO DE CONCELHOS -->
-	<div class="container">
+		<div class="container">
 
-		<div class="col-md-3 col-sm-4 col-xs-12 text-right pull-right">
-			<form action="?" method="post" id="form3">
-				<div class="form-group">
-					<input type="text" class="form-control" name="addOnlyConcelho" placeholder="Concelho" required="">
+			<div class="col-md-3 col-sm-4 col-xs-12 text-right pull-right">
+				<form action="?" method="post" id="form3">
+					<div class="form-group">
+						<input type="text" class="form-control" name="addOnlyConcelho" placeholder="Concelho" required="">
 
-					<select class="form-control" name="adddistrito" placeholder="Distrito" required="">
-						<?php
-						$query = 'SELECT nome,distritos_id FROM distritos ORDER BY nome ASC';
-						$result = pg_query($query);
+						<select class="form-control" name="adddistrito" placeholder="Distrito" required="">
+							<?php
+							$query = 'SELECT nome,distritos_id FROM distritos ORDER BY nome ASC';
+							$result = pg_query($query);
 							 //pega o id do distrito!
 
-						while ($row = pg_fetch_assoc($result)) {
+							while ($row = pg_fetch_assoc($result)) {
 
-							echo '<option value="'.$row["distritos_id"].' | '.$row["nome"].'">'.$row["nome"].'</option>';
-							$iddistrito = explode(" | ", $_POST["adddistrito"]);
+								echo '<option value="'.$row["distritos_id"].' | '.$row["nome"].'">'.$row["nome"].'</option>';
+								$iddistrito = explode(" | ", $_POST["adddistrito"]);
 
-						}
-						;?>
-					</select>
-					<input type="submit" name="addSoConcelho" class="btn btn-outline-success space" value="Adicionar">
-				</div>
-				<hr></hr> 
-			</form>
-		
-
-
-		<!-- FORMULÁRIO DE ADIÇÃO DE TIPOS DE ACIDENTES -->
-		
-			<form action="?" method="post" id="form2">
-				<div class="form-group">
-					<input type="text" class="form-control" name="addOnlyTAcidente" placeholder="Tipo de Acidente" required="">
-					<input type="submit" name="addTipoAcidente" class="btn btn-outline-success space" value="Adicionar">
-				</div>
-				<hr></hr>
-			</form>
-		
+							}
+							;?>
+						</select>
+						<input type="submit" name="addSoConcelho" class="btn btn-outline-success space" value="Adicionar">
+					</div>
+					<hr></hr> 
+				</form>
 
 
-<!-- FORMULÁRIO DE ADIÇÃO DE OCORRÊNCIAS -->
-						
+
+				<!-- FORMULÁRIO DE ADIÇÃO DE TIPOS DE ACIDENTES -->
+
+				<form action="?" method="post" id="form2">
+					<div class="form-group">
+						<input type="text" class="form-control" name="addOnlyTAcidente" placeholder="Tipo de Acidente" required="">
+						<input type="submit" name="addTipoAcidente" class="btn btn-outline-success space" value="Adicionar">
+					</div>
+					<hr></hr>
+				</form>
+
+
+
+				<!-- FORMULÁRIO DE ADIÇÃO DE OCORRÊNCIAS -->
+
 				<form action="?" method="post" id="form1">
 					<div class="form-group">
 						<select class="form-control" name="addConcelho" placeholder="Concelho" required="">
@@ -237,265 +236,266 @@ while ($row = pg_fetch_array($result)) {
 					<hr></hr>
 				</form>
 			</div>
-	</div>
+		</div>
 
 
 
 
-			
-				<?php
-				switch ($_SESSION["UsuarioGrupo"]) {
-					case 1:
-					case 2: 
+
+		<?php
+		switch ($_SESSION["UsuarioGrupo"]) {
+			case 1:
+			case 2: 
 
 
 //PARA INSERIR OS DADOS DE CONCELHO
-				if(isset($_POST['addSoConcelho'])){
-						$addOnlyConcelho= '\''.$_POST["addOnlyConcelho"].'\'';
+			if(isset($_POST['addSoConcelho'])){
+				$addOnlyConcelho= '\''.$_POST["addOnlyConcelho"].'\'';
 
-						// $query = 'INSERT INTO concelhos ("nome","distrito") VALUES('.$addOnlyConcelho.','.$iddistrito[0].');';
-						// $result = pg_query($query);
 
 						//FUNÇÃO INSERT CONCELHO
-						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_c('.$addOnlyConcelho.','.$iddistrito[0].') AS result; SELECT pg_sleep(6)');
+				$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_c('.$addOnlyConcelho.','.$iddistrito[0].') AS result; SELECT pg_sleep(6)');
 
 
-						if($queryinsert){
+				if($queryinsert){
 						//INSERE NO HISTÓRICO A OPERACÃO
-						$lastid = 'SELECT max(concelhos_id) AS lid FROM concelhos'; 
-						$resulta = pg_query($lastid);
-						$row = pg_fetch_assoc($resulta);
-						$lastinsert = $row["lid"];
+					$lastid = 'SELECT max(concelhos_id) AS lid FROM concelhos'; 
+					$resulta = pg_query($lastid);
+					$row = pg_fetch_assoc($resulta);
+					$lastinsert = $row["lid"];
 					
 
-						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
-						$operacao = "inserção de concelho";
-						$operacaook = '\''.$operacao.'\'';
+					$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+					$operacao = "inserção de concelho";
+					$operacaook = '\''.$operacao.'\'';
 
-						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
-						$result = pg_query($queryhistoric);
+					$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+					$result = pg_query($queryhistoric);
 
-						echo "<div class='alert alert-success col-md-3' role='alert'>Concelho adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
-					}else{
+					echo "<div class='alert alert-success col-md-3' role='alert'>Concelho adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+				}else{
 
-						echo "<div class='alert alert-warning col-md-3' role='alert'>Concelho não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
-					}
+					echo "<div class='alert alert-warning col-md-3' role='alert'>Concelho não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 				}
+			}
 
 //PARA INSERIR OS DADOS TIPO DE ACIDENTE
-				if(isset($_POST['addTipoAcidente'])){
-						$addOnlyTAcidente= '\''.$_POST["addOnlyTAcidente"].'\'';
+			if(isset($_POST['addTipoAcidente'])){
+				$addOnlyTAcidente= '\''.$_POST["addOnlyTAcidente"].'\'';
 
-						// $query = 'INSERT INTO tipoacidente ("nome") VALUES('.$addOnlyTAcidente.');';
-						// $result = pg_query($query);
 
 						//FUNÇÃO INSERT TIPO ACIDENTE
-						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_ta('.$addOnlyTAcidente.') AS result; SELECT pg_sleep(6)');
+				$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_ta('.$addOnlyTAcidente.') AS result; SELECT pg_sleep(6)');
 
-						if($queryinsert){
-							echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+				if($queryinsert){
+					echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 
 						//INSERE NO HISTÓRICO A OPERACÃO
-						$lastid = 'SELECT max(tipoacidente_id) AS lid FROM tipoacidente'; 
-						$resulta = pg_query($lastid);
-						$row = pg_fetch_assoc($resulta);
-						$lastinsert = $row["lid"];
+					$lastid = 'SELECT max(tipoacidente_id) AS lid FROM tipoacidente'; 
+					$resulta = pg_query($lastid);
+					$row = pg_fetch_assoc($resulta);
+					$lastinsert = $row["lid"];
 					
 
-						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
-						$operacao = "inserção de tipo de acidente";
-						$operacaook = '\''.$operacao.'\'';
+					$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+					$operacao = "inserção de tipo de acidente";
+					$operacaook = '\''.$operacao.'\'';
 
-						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
-						$result = pg_query($queryhistoric);
+					$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+					$result = pg_query($queryhistoric);
 
-						
-					}else{
-						echo "<div class='alert alert-warning col-md-3' role='alert'>Tipo de Acidente não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
-					}
+
+				}else{
+					echo "<div class='alert alert-warning col-md-3' role='alert'>Tipo de Acidente não adicionado, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 				}
+			}
 
 
 
 
 //PARA INSERIR OS DADOS DA ADIÇÃO
-					if(isset($_POST['add'])){
+			if(isset($_POST['add'])){
 
-						if(empty($_POST["addMortos"])){
-							$addMortos = "NULL";
+				if(empty($_POST["addMortos"])){
+					$addMortos = "NULL";
 
-						}else{
-							$addMortos = '\''.$_POST["addMortos"].'\'';
-						}
+				}else{
+					$addMortos = '\''.$_POST["addMortos"].'\'';
+				}
 
-						if(empty($_POST["addFeridos"])){
-							$addFeridos = "NULL";
+				if(empty($_POST["addFeridos"])){
+					$addFeridos = "NULL";
 
-						}else{
-							$addFeridos = '\''.$_POST["addFeridos"].'\'';
-						}
+				}else{
+					$addFeridos = '\''.$_POST["addFeridos"].'\'';
+				}
 
-						if(empty($_POST["addVia"])){
-							$addVia = "NULL";
+				if(empty($_POST["addVia"])){
+					$addVia = "NULL";
 
-						}else{
-							$addVia = '\''.$_POST["addVia"].'\'';
-						}
+				}else{
+					$addVia = '\''.$_POST["addVia"].'\'';
+				}
 
-						if(empty($_POST["addKm"])){
-							$addKm = "NULL";
+				if(empty($_POST["addKm"])){
+					$addKm = "NULL";
 
-						}else{
-							$addKm = '\''.$_POST["addKm"].'\'';
-						}
+				}else{
+					$addKm = '\''.$_POST["addKm"].'\'';
+				}
 
-						if(empty($_POST["addLatlong"])){
-							$addLatlong = "NULL";
+				if(empty($_POST["addLatlong"])){
+					$addLatlong = "NULL";
 
-						}else{
-							$addLatlong = '\''.$_POST["addLatlong"].'\'';
-						}
+				}else{
+					$addLatlong = '\''.$_POST["addLatlong"].'\'';
+				}
 
-						if(empty($_POST["addFeridosleves"])){
-							$addFeridosleves = "NULL";
+				if(empty($_POST["addFeridosleves"])){
+					$addFeridosleves = "NULL";
 
-						}else{
-							$addFeridosleves = '\''.$_POST["addFeridosleves"].'\'';
-						}
+				}else{
+					$addFeridosleves = '\''.$_POST["addFeridosleves"].'\'';
+				}
 
-						if(empty($_POST["addDescricao"])){
-							$addDescricao = "NULL";
+				if(empty($_POST["addDescricao"])){
+					$addDescricao = "NULL";
 
-						}else{
-							$addDescricao = '\''.$_POST["addDescricao"].'\'';
-						}
+				}else{
+					$addDescricao = '\''.$_POST["addDescricao"].'\'';
+				}
+
+				if(empty($_POST["addDatahora"])){
+					$addDatahora = "NULL";
+
+				}else{
+					$addDatahora = '\''.$_POST["addDatahora"].'\'';
+				}
 
 
-						$addConcelho= '\''.$_POST["addConcelho"].'\'';
-						$addDatahora= '\''.$_POST["addDatahora"].'\'';
-						$addNatureza= '\''.$_POST["addNatureza"].'\'';
-
+				$addConcelho= '\''.$_POST["addConcelho"].'\'';
+				$addNatureza= '\''.$_POST["addNatureza"].'\'';
 
 
 						//FUNÇÃO DE INSERT ACIDENTES
-						$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_a('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.') AS result; SELECT pg_sleep(6)');
+				$queryinsert = pg_exec($myPDO,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; SELECT insert_a('.$idconcelho[0].','.$addDatahora.','.$addMortos.','.$addFeridos.','.$addVia.','.$addKm.','.$idnatureza[0].','.$addDescricao.','.$addFeridosleves.','.$addLatlong.') AS result; SELECT pg_sleep(6)');
 
-						if($queryinsert){
-							echo "<div class='alert alert-success col-md-3' role='alert'>Ocorrência adicionada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+				if($queryinsert){
+					echo "<div class='alert alert-success col-md-3' role='alert'>Ocorrência adicionada com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
 
 						//INSERE NO HISTÓRICO A OPERACÃO
-						$lastid = 'SELECT max(acidentes_id) AS lid FROM acidentes'; 
-						$resulta = pg_query($lastid);
-						$row = pg_fetch_assoc($resulta);
-						$lastinsert = $row["lid"];
+					$lastid = 'SELECT max(acidentes_id) AS lid FROM acidentes'; 
+					$resulta = pg_query($lastid);
+					$row = pg_fetch_assoc($resulta);
+					$lastinsert = $row["lid"];
 					
 
-						$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
-						$operacao = "inserção de acidente";
-						$operacaook = '\''.$operacao.'\'';
+					$date = '\''.date('Y-m-d h:i:s A', time()).'\'';
+					$operacao = "inserção de acidente";
+					$operacaook = '\''.$operacao.'\'';
 
-						$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
-						$result = pg_query($queryhistoric);
+					$queryhistoric= 'INSERT INTO historico ("acidente","utilizador","datahora","operacao") VALUES('.$lastinsert.','.$_SESSION["UsuarioID"].','.$date.','.$operacaook.')';
+					$result = pg_query($queryhistoric);
 
-						}else{
-							echo "<div class='alert alert-warning col-md-3' role='alert'>Ocorrência não adicionada, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
-						}
+				}else{
+					echo "<div class='alert alert-warning col-md-3' role='alert'>Ocorrência não adicionada, tente novamente!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
+				}
 
 
-					}
+			}
 			
 
 
 //PARA FILTRAR OS DADOS E MOSTRAR NA TABELA
-				if(isset($_POST['filtro']) && isset($_SESSION['UsuarioID'])){
-					$filtroConcelho= '\''.$_POST["filtroConcelho"].'\'';
-					$filtroNatureza= '\''.$_POST["filtroNatureza"].'\'';
-					$tratadata1 = '\''.$_POST["data1"].'\'';
-					$tratadata2 = '\''.$_POST["data2"].'\'';
+			if(isset($_POST['filtro']) && isset($_SESSION['UsuarioID'])){
+				$filtroConcelho= '\''.$_POST["filtroConcelho"].'\'';
+				$filtroNatureza= '\''.$_POST["filtroNatureza"].'\'';
+				$tratadata1 = '\''.$_POST["data1"].'\'';
+				$tratadata2 = '\''.$_POST["data2"].'\'';
 
-					if(empty($_POST["filtroMortos"])){
-						$filtroMortos= '';
-					}else{
-						$filtroMortos = ' AND mortos = '.$_POST["filtroMortos"].' ';
-					}
+				if(empty($_POST["filtroMortos"])){
+					$filtroMortos= '';
+				}else{
+					$filtroMortos = ' AND mortos = '.$_POST["filtroMortos"].' ';
+				}
 
-					if(empty($_POST["filtroFeridos"])){
-						$filtroFeridos= '';
-					}else{
-						$filtroFeridos = ' AND feridosgraves = '.$_POST["filtroFeridos"].' ';
-					}
+				if(empty($_POST["filtroFeridos"])){
+					$filtroFeridos= '';
+				}else{
+					$filtroFeridos = ' AND feridosgraves = '.$_POST["filtroFeridos"].' ';
+				}
 
-					if(empty($_POST["data1"]) || empty($_POST["data2"])){
-						$datas= '';
-						$dt = '';
-					}else{
-						$datas = ' AND datahora BETWEEN '.$tratadata1.' AND '.$tratadata2.' ';
-						$dt =',date(datahora) ';
-					}
-
-
+				if(empty($_POST["data1"]) || empty($_POST["data2"])){
+					$datas= '';
+					$dt = '';
+				}else{
+					$datas = ' AND datahora BETWEEN '.$tratadata1.' AND '.$tratadata2.' ';
+					$dt =',date(datahora) ';
+				}
 
 
-					$queryfiltro = 'SELECT *,tipoacidente.nome AS natureza,concelhos.nome AS nomeconcelho '.$dt.' FROM acidentes,concelhos,tipoacidente 
-					WHERE acidentes.concelho = concelhos.concelhos_id 
-					AND concelhos.nome ='.$filtroConcelho.' '.$filtroMortos.' '.$filtroFeridos.' AND acidentes.tipoacidente = tipoacidente.tipoacidente_id AND tipoacidente.nome = '.$filtroNatureza.' '.$datas.' ORDER BY acidentes_id ASC';
-					$result = pg_query($queryfiltro);
 
 
-					if(pg_num_rows($result) == null){
-						echo "<div class='container spacetopo alert alert-warning' role='alert'>Nenhuma ocorrência encontrada.</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
-					}else{
-						echo "<div class='container spacetopo'><table class='table table-bordered table-striped'>
-						<thead class='fundotable'>
-						<tr>
-						<th scope='col'>ID</th>
-						<th scope='col'>Concelho</th>
-						<th scope='col'>Data e hora</th>
-						<th scope='col'>Mortos</th>
-						<th scope='col'>Feridos Graves</th>
-						<th scope='col'>Km</th>
-						<th scope='col'>Via</th>
-						<th scope='col'>Natureza</th>
-						<th scope='col'>Descrição</th>
-						<th scope='col'>Feridos Leves</th>
-						<th scope='col'>GPS</th>
-						<th scope='col'>Editar</th>";
-						if($_SESSION["UsuarioGrupo"] == 1){
+				$queryfiltro = 'SELECT *,tipoacidente.nome AS natureza,concelhos.nome AS nomeconcelho '.$dt.' FROM acidentes,concelhos,tipoacidente 
+				WHERE acidentes.concelho = concelhos.concelhos_id 
+				AND concelhos.nome ='.$filtroConcelho.' '.$filtroMortos.' '.$filtroFeridos.' AND acidentes.tipoacidente = tipoacidente.tipoacidente_id AND tipoacidente.nome = '.$filtroNatureza.' '.$datas.' ORDER BY acidentes_id ASC';
+				$result = pg_query($queryfiltro);
+
+
+				if(pg_num_rows($result) == null){
+					echo "<div class='container spacetopo alert alert-warning' role='alert'>Nenhuma ocorrência encontrada.</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 2000);</script>";
+				}else{
+					echo "<div class='container spacetopo'><table class='table table-bordered table-striped'>
+					<thead class='fundotable'>
+					<tr>
+					<th scope='col'>ID</th>
+					<th scope='col'>Concelho</th>
+					<th scope='col'>Data e hora</th>
+					<th scope='col'>Mortos</th>
+					<th scope='col'>Feridos Graves</th>
+					<th scope='col'>Km</th>
+					<th scope='col'>Via</th>
+					<th scope='col'>Natureza</th>
+					<th scope='col'>Descrição</th>
+					<th scope='col'>Feridos Leves</th>
+					<th scope='col'>GPS</th>
+					<th scope='col'>Editar</th>";
+					if($_SESSION["UsuarioGrupo"] == 1){
 						echo "<th scope='col'>Excluir</th>";
-						}
-						echo"</tr>
-						</thead>
-						<tbody>";
+					}
+					echo"</tr>
+					</thead>
+					<tbody>";
 
-						while ($row = pg_fetch_array($result)) {
-							$_SESSION["idparaupdate"] = $row["acidentes_id"];
-							echo "<tr>
-							<td>" . $row["acidentes_id"]. "</td>
-							<td>" . $row["nomeconcelho"]. "</td>
-							<td>" . $row["datahora"]. "</td>
-							<td>" . $row["mortos"]. "</td>
-							<td>" . $row["feridosgraves"]. "</td>
-							<td>" . $row["km"]. "</td>
-							<td>" . $row["vias"]. "</td>
-							<td>" . $row["natureza"]. "</td>
-							<td>" . $row["descricao"]. "</td>
-							<td>" . $row["feridosleves"]. "</td>
-							<td>" . $row["gps"]. "</td>
-							<td><a href='update.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info btn-sm'><i class='far fa-edit'></i></a></td>";
-							if($_SESSION["UsuarioGrupo"] == 1){
+					while ($row = pg_fetch_array($result)) {
+						$_SESSION["idparaupdate"] = $row["acidentes_id"];
+						echo "<tr>
+						<td>" . $row["acidentes_id"]. "</td>
+						<td>" . $row["nomeconcelho"]. "</td>
+						<td>" . $row["datahora"]. "</td>
+						<td>" . $row["mortos"]. "</td>
+						<td>" . $row["feridosgraves"]. "</td>
+						<td>" . $row["km"]. "</td>
+						<td>" . $row["vias"]. "</td>
+						<td>" . $row["natureza"]. "</td>
+						<td>" . $row["descricao"]. "</td>
+						<td>" . $row["feridosleves"]. "</td>
+						<td>" . $row["gps"]. "</td>
+						<td><a href='update.php?edit=".$row["acidentes_id"]."' class='edit_btn btn btn-info btn-sm'><i class='far fa-edit'></i></a></td>";
+						if($_SESSION["UsuarioGrupo"] == 1){
 							echo "<td><a href='delete.php?del=".$row["acidentes_id"]."' class='del_btn btn btn-danger btn-sm'><i class='far fa-trash-alt'></i></a></td>";
-							}
-							echo"</tr>";
-							
-						}}?>
-					</tbody>
-				</table>
-			</div>
+						}
+						echo"</tr>";
 
-				<?php
-			}
+					}}?>
+				</tbody>
+			</table>
+		</div>
 
-			break;
+		<?php
+	}
+
+	break;
 		} //chave do switch case
 
 	}else{ //chave do isset SESSION
@@ -508,7 +508,7 @@ while ($row = pg_fetch_array($result)) {
 
 
 
-<!--JQUERY-->
+	<!--JQUERY-->
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#btnadd").click(function() {
@@ -572,5 +572,5 @@ while ($row = pg_fetch_array($result)) {
 		}(jQuery));
 	</script>
 
-	</body>
+</body>
 </html>

@@ -4,16 +4,22 @@
 	
 
 	if(isset($_SESSION)){
-//var_dump($_SESSION);
-		// if($_SESSION["UsuarioID"] == 1){
-		// 	$_SESSION["imagem"] = "indice.png";
-		// 	//<img src="images/<?php echo $_SESSION["imagem"]" width="10%">
-		// }
+		//var_dump($_SESSION);
+
+		switch ($_SESSION["UsuarioID"]) {
+			case 1:
+				$_SESSION["imagem"] = "PSP.png";
+				break;
+			case 2:
+				$_SESSION["imagem"] = "GNR.png";
+				break;
+			}
+
 		?>
 
 
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
-			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3>
+			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname"><img src="images/<?php echo $_SESSION["imagem"];?>" class="imgspace" width="8%"> Olá, <?php echo $_SESSION["UsuarioNome"]." - ".$_SESSION["Gruponome"];?></h3>
 			</div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
@@ -86,7 +92,52 @@
 	<button type="button" class="btn btn-info btn-sm space" id="btnadd">Adicionar Ocorrência</button>
 	<button type="button" class="btn btn-info btn-sm space" id="btnaddumconcelho">Adicionar Concelho</button>
 	<button type="button" class="btn btn-info btn-sm space" id="btnaddtipoacidente">Adicionar Tipo de Acidente</button>
+	<?php
+if($_SESSION["UsuarioGrupo"] == 1){
+	echo "<button type='button' class='btn btn-info btn-sm space' id='btnhisto'>Visualizar Histórico</button>";
+}?>
 </div>
+
+
+
+<!-- CHAMADA DE HISTÓRICO -->
+<?php
+if($_SESSION["UsuarioGrupo"] == 1){
+					
+$queryfiltro = 'SELECT * FROM historico ORDER BY historico_id ASC';
+$result = pg_query($queryfiltro);
+?>
+
+	<div class="container spacetopo" id="showtable">
+		<table class="table table-bordered table-striped">
+		<thead class="fundotable">
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">Id do caso</th>
+				<th scope="col">Utilizador</th>
+				<th scope="col">Data e hora</th>
+				<th scope="col">Operação</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+while ($row = pg_fetch_array($result)) {
+							
+			echo "<tr>
+			<td>" . $row["historico_id"]. "</td>
+			<td>" . $row["acidente"]. "</td>
+			<td>" . $row["utilizador"]. "</td>
+			<td>" . $row["datahora"]. "</td>
+			<td>" . $row["operacao"]. "</td>
+			</tr>";
+		}
+		}
+			?>
+		</tbody>
+	</table>
+</div>
+
+
 
 
 		<!-- FORMULÁRIO DE ADIÇÃO DE CONCELHOS -->
@@ -243,7 +294,7 @@
 
 						if($queryinsert){
 							echo "<div class='alert alert-success col-md-3' role='alert'>Tipo de Acidente adicionado com sucesso!</div><script type='text/javascript'>window.setTimeout(function() {window.location.href = 'trazdados.php';}, 5000);</script>";
-							
+
 						//INSERE NO HISTÓRICO A OPERACÃO
 						$lastid = 'SELECT max(tipoacidente_id) AS lid FROM tipoacidente'; 
 						$resulta = pg_query($lastid);
@@ -410,7 +461,7 @@
 						<th scope='col'>GPS</th>
 						<th scope='col'>Editar</th>";
 						if($_SESSION["UsuarioGrupo"] == 1){
-						echo "<th scope='col'>Deletar</th>";
+						echo "<th scope='col'>Excluir</th>";
 						}
 						echo"</tr>
 						</thead>
@@ -464,6 +515,7 @@
 				$("#form1").toggle();
 				$("#form2").hide();
 				$("#form3").hide();
+				$("#showtable").hide();
 			});
 		});
 		$(document).ready(function() {
@@ -471,11 +523,21 @@
 				$("#form2").toggle();
 				$("#form1").hide();
 				$("#form3").hide();
+				$("#showtable").hide();
 			});
 		});
 		$(document).ready(function() {
 			$("#btnaddumconcelho").click(function() {
 				$("#form3").toggle();
+				$("#form1").hide();
+				$("#form2").hide();
+				$("#showtable").hide();
+			});
+		});
+		$(document).ready(function() {
+			$("#btnhisto").click(function() {
+				$("#showtable").toggle();
+				$("#form3").hide();
 				$("#form1").hide();
 				$("#form2").hide();
 			});

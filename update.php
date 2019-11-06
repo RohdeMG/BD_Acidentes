@@ -2,6 +2,15 @@
 	require_once("header.php");
 	require_once("conexao.php");
 
+		switch ($_SESSION["UsuarioID"]) {
+			case 1:
+				$_SESSION["imagem"] = "PSP.png";
+				break;
+			case 2:
+				$_SESSION["imagem"] = "GNR.png";
+				break;
+			}
+
 	$mortos = "";
 	$id = "";
 	$feridosgraves = "";
@@ -53,7 +62,8 @@ switch ($_SESSION["UsuarioGrupo"]) {
 
 
 		<div class="col-md-12 col-sm-12 col-xs-12 barratopo">
-			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname">Olá, <?php echo $_SESSION["UsuarioNome"];?></h3></div>
+			<div class="col-md-6 col-sm-8 col-xs-12 pull-left"><h3 class="colorname"><img src="images/<?php echo $_SESSION["imagem"];?>" class="imgspace" width="8%"> Olá, <?php echo $_SESSION["UsuarioNome"]." - ".$_SESSION["Gruponome"];?></h3>
+			</div>
 			<div class="col-md-6 col-sm-8 col-xs-12 text-right">		
 				<a class="btn btn-primary space" href="logout.php">Sair</a>
 			</div>

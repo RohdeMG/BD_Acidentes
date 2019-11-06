@@ -11,7 +11,7 @@ if (isset($_POST["clicou"])){
 
 
 // Validação do usuário/senha digitados
-	$query = "SELECT * FROM utilizadores WHERE username='".$username."' AND palavrapasse='".$palavrapasse."'";
+	$query = "SELECT *,utilizadores.nome AS utilinome,grupos.nome AS grupnome FROM utilizadores,grupos WHERE utilizadores.grupo = grupos.grupos_id AND utilizadores.username='".$username."' AND utilizadores.palavrapasse='".$palavrapasse."'";
 	$result = pg_query($query);
 
 	if(pg_num_rows($result) != null){
@@ -21,10 +21,10 @@ if (isset($_POST["clicou"])){
 		
  // Salva os dados encontrados na sessão
 		$_SESSION["UsuarioID"] = $resultado["utilizadores_id"];
-		$_SESSION["UsuarioNome"] = $resultado["nome"];
+		$_SESSION["UsuarioNome"] = $resultado["utilinome"];
 		$_SESSION["UsuarioGrupo"] = $resultado["grupo"];
+		$_SESSION["Gruponome"] = $resultado["grupnome"];
 
-	
 
 		header("Location:trazdados.php");
 	}else{
